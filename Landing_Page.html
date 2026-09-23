@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Echo — AI analysis for real-time discussions</title>
+<style>
+  :root{
+    --cream:#F3EFE3;
+    --ink:#1C1B18;
+    --maroon:#7A1E3C;
+    --pink:#C23B6B;
+    --muted:#6b665c;
+    --line:rgba(28,27,24,.12);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;
+    background:linear-gradient(135deg,#5b1030 0%,#7a1e3c 35%,#a52a5a 65%,#c9506f 100%);
+    padding:24px;
+    min-height:100vh;
+  }
+
+  /* ===== Outer frame ===== */
+  .frame{
+    max-width:1440px;
+    margin:0 auto;
+    background:var(--cream);
+    border-radius:28px;
+    overflow:hidden;
+    box-shadow:0 40px 80px rgba(0,0,0,.35);
+  }
+
+  /* ===== Nav ===== */
+  nav{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:28px 56px;
+  }
+  .logo{width:38px;height:38px;color:var(--ink);}
+  .nav-links{display:flex;gap:40px;list-style:none;}
+  .nav-links a{color:var(--ink);text-decoration:none;font-size:15px;opacity:.85;transition:opacity .2s;}
+  .nav-links a:hover{opacity:1;}
+  .nav-icons{display:flex;gap:18px;align-items:center;}
+  .icon-btn{
+    width:38px;height:38px;border-radius:50%;border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;color:var(--ink);
+  }
+
+  /* ===== Hero ===== */
+  .hero{
+    display:grid;
+    grid-template-columns:1fr 1.15fr;
+    gap:40px;
+    padding:40px 56px 90px;
+    align-items:center;
+  }
+  .eyebrow-tag{color:var(--maroon);font-size:38px;font-weight:800;letter-spacing:-.5px;}
+  h1{
+    font-size:52px;line-height:1.05;font-weight:800;letter-spacing:-1.5px;
+    color:var(--ink);margin:6px 0 22px;
+  }
+  .sub{
+    max-width:440px;color:var(--muted);font-size:16px;line-height:1.6;margin-bottom:34px;
+  }
+  .cta-row{display:flex;align-items:center;gap:16px;margin-bottom:26px;}
+  .btn-primary{
+    display:inline-flex;align-items:center;gap:10px;
+    background:linear-gradient(90deg,var(--maroon),var(--pink));
+    color:#fff;border:none;padding:15px 26px;border-radius:32px;
+    font-size:15px;font-weight:600;cursor:pointer;
+    box-shadow:0 8px 20px rgba(122,30,60,.35);
+    transition:transform .2s ease;
+  }
+  .btn-primary:hover{transform:translateY(-2px);}
+  .btn-primary .arrow-circ{
+    width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.25);
+    display:flex;align-items:center;justify-content:center;font-size:13px;
+  }
+  .btn-secondary{
+    padding:15px 24px;border-radius:32px;border:1px solid var(--line);
+    background:transparent;color:var(--ink);font-size:15px;cursor:pointer;
+  }
+  .fine-print{display:flex;gap:26px;font-size:13px;color:var(--muted);flex-wrap:wrap;}
+  .fine-print span::before{content:"✓ ";color:var(--maroon);}
+
+  /* ===== Hero visual ===== */
+  .visual{
+    position:relative;
+    display:grid;
+    grid-template-columns:1fr 1.3fr 1fr;
+    gap:18px;
+    align-items:center;
+    min-height:600px;
+  }
+  .video-tile{
+    border-radius:16px;overflow:hidden;aspect-ratio:1/1.05;position:relative;
+    box-shadow:0 12px 30px rgba(0,0,0,.18);
+    opacity:0;transform:translateY(18px);
+    animation:riseIn .7s ease forwards;
+  }
+  .video-tile img{width:100%;height:100%;object-fit:cover;display:block;}
+  .video-tile.ring::after{
+    content:"";position:absolute;inset:0;border-radius:16px;border:3px solid var(--pink);
+  }
+  .video-tile .tag{
+    position:absolute;bottom:8px;left:8px;display:flex;gap:6px;
+  }
+  .video-tile .tag .dot{
+    width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,.45);
+    display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;
+  }
+  .col-left{display:flex;flex-direction:column;gap:18px;height:100%;justify-content:space-between;}
+  .col-right{display:flex;flex-direction:column;gap:18px;height:100%;justify-content:space-between;}
+
+  /* center phone-style card */
+  .center-card{
+    background:#0d0d0d;border-radius:22px;padding:20px;color:#fff;
+    position:relative;box-shadow:0 25px 60px rgba(0,0,0,.4);
+    opacity:0;transform:translateY(24px);
+    animation:riseIn .8s ease .15s forwards;
+  }
+  .rating-pill{
+    position:absolute;top:-18px;left:50%;transform:translateX(-50%);
+    background:#fff;color:var(--ink);border-radius:14px;padding:8px 14px;
+    font-size:11px;display:flex;align-items:center;gap:8px;box-shadow:0 10px 20px rgba(0,0,0,.15);
+    white-space:nowrap;
+  }
+  .rating-pill b{color:#e0a800;}
+  .meeting-head{display:flex;justify-content:space-between;align-items:flex-start;margin-top:14px;}
+  .meeting-head h3{font-size:16px;font-weight:600;}
+  .waveform{
+    display:flex;align-items:center;gap:2px;height:44px;margin:22px 0 6px;position:relative;
+  }
+  .waveform span{
+    width:3px;background:#8a8a8a;border-radius:2px;animation:wave 1.2s ease-in-out infinite;
+  }
+  .waveform .played{background:#fff;}
+  .playhead{
+    position:absolute;top:0;bottom:-8px;width:2px;background:var(--pink);left:52%;
+  }
+  .playhead::after{
+    content:"";position:absolute;bottom:-4px;left:-3px;width:8px;height:8px;border-radius:50%;background:var(--pink);
+  }
+  .track-line{height:1px;background:#333;position:relative;margin-bottom:18px;}
+  .track-line::before{content:"";position:absolute;left:0;top:-1.5px;height:4px;width:52%;background:#fff;border-radius:2px;}
+
+  .transcript-card{
+    background:#fff;color:var(--ink);border-radius:16px;padding:16px;margin-top:-4px;
+    position:relative;z-index:2;box-shadow:0 20px 40px rgba(0,0,0,.15);
+    opacity:0;transform:translateY(20px);
+    animation:riseIn .8s ease .35s forwards;
+  }
+  .transcript-top{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:10px;}
+  .analysing{color:var(--maroon);font-weight:600;}
+  .analysing::before{content:"✦ ";}
+  .speaker-row{display:flex;gap:10px;align-items:flex-start;}
+  .avatar-sm{width:30px;height:30px;border-radius:50%;object-fit:cover;flex-shrink:0;}
+  .speaker-tags{display:flex;gap:6px;align-items:center;margin-bottom:6px;}
+  .name-chip{background:var(--ink);color:#fff;font-size:10px;padding:3px 9px;border-radius:10px;}
+  .time-chip{background:var(--pink);color:#fff;font-size:10px;padding:3px 9px;border-radius:10px;}
+  .typing-text{font-size:13.5px;line-height:1.5;}
+  .caret{display:inline-block;width:2px;height:14px;background:var(--ink);margin-left:2px;animation:blink 1s step-end infinite;vertical-align:middle;}
+
+  .lower-msgs{margin-top:16px;font-size:12.5px;}
+  .lower-msgs .msg{margin-bottom:12px;opacity:.85;}
+  .lower-msgs .msg b{display:block;font-size:13.5px;margin-bottom:2px;}
+  .lower-msgs .meta{font-size:10px;color:var(--muted);}
+  .play-btn{
+    width:38px;height:38px;border-radius:50%;background:var(--ink);color:#fff;
+    display:flex;align-items:center;justify-content:center;position:absolute;
+    bottom:14px;left:50%;transform:translateX(-50%);cursor:pointer;box-shadow:0 8px 18px rgba(0,0,0,.25);
+  }
+
+  .float-1{animation-delay:.05s;}
+  .float-2{animation-delay:.25s;}
+  .float-3{animation-delay:.45s;}
+  .float-4{animation-delay:.55s;}
+
+  /* ===== Promo bar ===== */
+  .promo{
+    background:#fff;border-top:1px solid var(--line);
+    padding:26px 56px;display:flex;align-items:center;justify-content:center;gap:14px;
+    font-size:14px;flex-wrap:wrap;
+  }
+  .promo b{font-weight:700;}
+  .promo .start-trial{color:var(--maroon);font-weight:600;display:flex;align-items:center;gap:6px;text-decoration:none;}
+
+  .logos{
+    display:flex;align-items:center;justify-content:center;gap:56px;
+    padding:34px 56px 54px;flex-wrap:wrap;background:#fff;
+  }
+  .logos .brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:18px;color:var(--ink);opacity:.8;}
+  .logos svg{width:22px;height:22px;}
+
+  @keyframes riseIn{to{opacity:1;transform:translateY(0);}}
+  @keyframes wave{
+    0%,100%{transform:scaleY(.4);}
+    50%{transform:scaleY(1);}
+  }
+  @keyframes blink{50%{opacity:0;}}
+  @keyframes pulseDot{
+    0%{box-shadow:0 0 0 0 rgba(194,59,107,.5);}
+    70%{box-shadow:0 0 0 8px rgba(194,59,107,0);}
+    100%{box-shadow:0 0 0 0 rgba(194,59,107,0);}
+  }
+  .live-dot{width:8px;height:8px;border-radius:50%;background:var(--pink);animation:pulseDot 1.8s infinite;}
+
+  @media(max-width:980px){
+    nav .nav-links{display:none;}
+    .hero{grid-template-columns:1fr;padding:20px 24px 60px;}
+    h1{font-size:38px;}
+    .visual{min-height:auto;grid-template-columns:1fr 1.4fr 1fr;}
+    .logos{gap:28px;}
+  }
+  @media(prefers-reduced-motion: reduce){
+    *{animation:none !important;transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="frame">
+  <nav>
+    <svg class="logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 4h6l4 6-4 6H7l-4-6 4-6z"/><path d="M12 4v12"/></svg>
+    <ul class="nav-links">
+      <li><a href="#">How it works</a></li>
+      <li><a href="#">Use cases</a></li>
+      <li><a href="#">Features</a></li>
+      <li><a href="#">Pricing</a></li>
+      <li><a href="#">FAQ</a></li>
+    </ul>
+    <div class="nav-icons">
+      <div class="icon-btn">⇥</div>
+      <div class="icon-btn">◯</div>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div>
+      <div class="eyebrow-tag">AI analysis</div>
+      <h1>for real-time<br>discussions</h1>
+      <p class="sub">Live AI records your meetings, recognizes who's speaking, and provides real-time insights and live recommendations — all without taking manual notes.</p>
+      <div class="cta-row">
+        <button class="btn-primary"><span class="arrow-circ">→</span> Start for free</button>
+        <button class="btn-secondary">Contact us</button>
+      </div>
+      <div class="fine-print">
+        <span>31-day free trial</span>
+        <span>No credit card required</span>
+        <span>Cancel anytime</span>
+      </div>
+    </div>
+
+    <div class="visual">
+      <div class="col-left">
+        <div class="video-tile ring float-1">
+          <img src="https://i.pravatar.cc/400?img=47" alt="participant">
+          <div class="tag"><div class="dot">🎤</div></div>
+        </div>
+      </div>
+
+      <div class="center-card">
+        <div class="rating-pill"><b>★★★★★</b> 5.0/5.0 &nbsp;·&nbsp; #1 Rated, 6,000+ Reviews</div>
+        <div class="meeting-head">
+          <h3>End-of-Sprint<br>Meeting</h3>
+          <span>⋯</span>
+        </div>
+        <div class="waveform" id="waveform"></div>
+        <div class="track-line"></div>
+
+        <div class="transcript-card">
+          <div class="transcript-top">
+            <span><span class="live-dot" style="display:inline-block;margin-right:6px;"></span>00:05:39</span>
+            <span class="analysing">Analysing...</span>
+          </div>
+          <div class="speaker-row">
+            <img class="avatar-sm" src="https://i.pravatar.cc/80?img=68" alt="Conrad">
+            <div>
+              <div class="speaker-tags">
+                <span class="name-chip">Conrad</span>
+                <span class="time-chip">05:45</span>
+              </div>
+              <div class="typing-text" id="typingText"></div>
+            </div>
+          </div>
+
+          <div class="lower-msgs">
+            <div class="msg">
+              <b>Perfect. Any blockers on your side, Liam?</b>
+            </div>
+            <div class="msg">
+              <span class="meta">Sofia · 05:45</span>
+              <b>Go with the slim variant. The thick one is only for web dashboard; mobile uses the lighter style.</b>
+            </div>
+          </div>
+        </div>
+        <div class="play-btn" id="playBtn">❚❚</div>
+      </div>
+
+      <div class="col-right">
+        <div class="video-tile float-2">
+          <img src="https://i.pravatar.cc/400?img=45" alt="participant">
+        </div>
+        <div class="video-tile float-4">
+          <img src="https://i.pravatar.cc/400?img=12" alt="participant">
+          <div class="tag"><div class="dot">🔇</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="promo">
+    <span><b>Enjoy 50% off premium features</b> for first 3 months — 21 days remaining</span>
+    <a href="#" class="start-trial">→ Start 14 days trial</a>
+  </div>
+
+  <div class="logos">
+    <div class="brand">⬡ SHELLS</div>
+    <div class="brand">▲ SmartFinder</div>
+    <div class="brand">⚡ Zoomerr</div>
+    <div class="brand">◐ kontrastr</div>
+    <div class="brand">▮▮▮ WAVESMARATHON</div>
+  </div>
+</div>
+
+<script>
+  // build waveform bars
+  const wf = document.getElementById('waveform');
+  const bars = 44;
+  for(let i=0;i<bars;i++){
+    const b = document.createElement('span');
+    const h = 8 + Math.random()*36;
+    b.style.height = h+'px';
+    b.style.animationDelay = (i*0.04)+'s';
+    if(i < bars*0.52) b.classList.add('played');
+    wf.appendChild(b);
+  }
+
+  // typing effect for transcript line
+  const fullText = "The only thing left is to get the final illustration, and ";
+  const el = document.getElementById('typingText');
+  let i = 0;
+  function typeChar(){
+    if(i <= fullText.length){
+      el.innerHTML = fullText.slice(0,i) + '<span class="caret"></span>';
+      i++;
+      setTimeout(typeChar, 45);
+    } else {
+      setTimeout(()=>{ i=0; typeChar(); }, 1800);
+    }
+  }
+  typeChar();
+
+  // play/pause toggle icon
+  const playBtn = document.getElementById('playBtn');
+  let playing = true;
+  playBtn.addEventListener('click', ()=>{
+    playing = !playing;
+    playBtn.textContent = playing ? '❚❚' : '▶';
+  });
+</script>
+
+</body>
+</html>
