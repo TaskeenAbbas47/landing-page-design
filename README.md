@@ -90,7 +90,7 @@ The interface keeps unnecessary visual noise to a minimum while maintaining a pr
 
 <!-- Add your screenshot here -->
 
-<img src="https://placehold.co/1200x700/111827/FFFFFF?text=Landing+Page+Preview" width="90%" alt="Landing Page Preview"/>
+<img src="D:\Downloads\Landing-Page\assets\LandingPage.png" width="90%" alt="Landing Page Preview"/>
 
 </div>
 
