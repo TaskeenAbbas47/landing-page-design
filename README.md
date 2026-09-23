@@ -119,46 +119,7 @@ landing-page-design/
 
 
 
-
-🚀 Getting Started
+##🚀 Getting Started
 1. Clone the repository
+</> BASH
 git clone https://github.com/TaskeenAbbas47/landing-page-design.git
-2. Navigate into the project
-cd landing-page-design
-3. Install dependencies
-npm install
-4. Start the development server
-npm run dev
-
-Then open the local URL shown in your terminal.
-
-🎯 What I Focused On
-
-This project helped me improve my understanding of:
-
-Modern landing page composition
-UI/UX principles
-Responsive design
-React component architecture
-Tailwind CSS
-Framer Motion animations
-Interactive hover states
-Visual storytelling
-Conversion-focused layouts
-🔮 Future Improvements
- Add dark/light theme switching
- Add more interactive sections
- Improve accessibility
- Add performance optimizations
- Add real backend functionality
- Deploy a production version
-👨‍💻 Designed & Developed By
-<div align="center">
-Taskeen Abbas
-
-Frontend Developer • UI/UX Designer • Software Engineering Student
-
-<br/> <a href="https://github.com/TaskeenAbbas47"> <img src="https://img.shields.io/badge/GitHub-TaskeenAbbas47-181717?style=for-the-badge&logo=github" /> </a> </div>
-<div align="center">
-⭐ If you like this project, consider giving it a star!
-<br/> <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&height=100&section=footer"/> </div> ```
