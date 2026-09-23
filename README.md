@@ -118,8 +118,3 @@ landing-page-design/
 └── README.md
 
 
-
-##🚀 Getting Started
-1. Clone the repository
-</> BASH
-git clone https://github.com/TaskeenAbbas47/landing-page-design.git
