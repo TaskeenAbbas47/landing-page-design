@@ -90,7 +90,7 @@ The interface keeps unnecessary visual noise to a minimum while maintaining a pr
 
 <!-- Add your screenshot here -->
 
-<img src="D:\Downloads\Landing-Page\assets\LandingPage.png" width="90%" alt="Landing Page Preview"/>
+<img src="D:\Downloads\Landing-Page\assets\LandingPage.PNG" width="90%" alt="Landing Page Preview"/>
 
 </div>
 
